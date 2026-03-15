@@ -4322,4 +4322,4 @@ void main() {
       "></div>
     </div>
   `}const Cg=Vs();Cg?Ia():Eg(()=>Ia());function Ia(){yg(),Ag();const i=document.getElementById("three-canvas"),e=document.querySelector(".canvas-area"),t=new pm(i,e),n=Pm(),r=new mm(t.scene,yt,n),s=new vm(t.scene,yt);t.onFrame(()=>{if(yt.isSimulating){const{hasCurrent:a}=Ys(yt);yt.components.forEach(o=>{o.type==="led"&&Nl(o,a)}),a&&yt.wires.forEach(o=>Im(o,Date.now()*.001))}}),t.start(),Vm(yt,t,r,s),Bm(),Jm(yt,e,t,r),Qm(yt,t,r,s),tg(yt,t,r,s),ng(yt,r,s),lg(t),hg(yt,t,i),gg(),vg(),$s(ct.STATE_CHANGED,()=>{zm(yt),s.updateAll(Ys(yt).hasCurrent,yt.isSimulating)}),$s(ct.NOTIFICATION,({type:a,title:o,message:l})=>{Ze(a,o,l)}),Wt(yt,"Estado inicial"),mt(ct.STATE_CHANGED,null),mt(ct.NOTIFICATION,{type:"success",title:"¡Listo!",message:"Circuit Lab Pro cargado ⚡"})}
-//# sourceMappingURL=index-CByWaMoz.js.map
+//# sourceMappingURL=index-DYbOqLGT.js.map
