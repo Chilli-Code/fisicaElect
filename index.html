@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Circuit Lab Pro - Simulador 3D Interactivo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
+  <script type="module" crossorigin src="/fisicaElect/assets/index-CByWaMoz.js"></script>
+  <link rel="stylesheet" crossorigin href="/fisicaElect/assets/index-DQHRx7cQ.css">
+</head>
+<body>
+
+  <div class="menu-bar">
+    <div class="menu-left">
+      <div class="app-icon">⚡</div>
+      <span class="app-name">Circuit Lab Pro</span>
+    </div>
+
+</button>
+    <div class="menu-center">
+      <button class="menu-item active" data-view="workspace">
+        <animated-icons
+  src="https://animatedicons.co/get-icon?name=desktop&style=minimalistic&token=555c3e15-cf68-4d5d-b14b-11996b8e1473"
+  attributes='{"variationThumbColour":"#536DFE","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1,"defaultColours":{"group-1":"#000000","group-2":"#536DFE","background":"#FFFFFF"}}'
+  height="20"
+  trigger="loop-on-hover"
+
+  width="20"
+></animated-icons><span>Espacio de Trabajo</span>
+      </button>
+      <button class="menu-item" data-view="library">
+        <animated-icons
+  src="https://animatedicons.co/get-icon?name=Learned&style=minimalistic&token=49b1299b-1bb0-4144-8e32-4265bddc1e65"
+  trigger="loop"
+  attributes='{"variationThumbColour":"#536DFE","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1,"defaultColours":{"group-1":"#000000","group-2":"#536DFE","background":"#FFFFFF"}}'
+  height="20"
+  width="20"
+></animated-icons>
+        <span>Biblioteca</span>
+      </button>
+      <button class="menu-item" data-view="analysis">
+        <animated-icons
+  src="https://animatedicons.co/get-icon?name=analytics&style=minimalistic&token=49b1299b-1bb0-4144-8e32-4265bddc1e65"
+  trigger="loop"
+  attributes='{"variationThumbColour":"#536DFE","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1,"defaultColours":{"group-1":"#000000","group-2":"#536DFE","background":"#FFFFFF"}}'
+  height="20"
+  width="20"
+></animated-icons>
+      
+      </span><span>Análisis</span>
+      </button>
+    </div>
+    <div class="menu-right">
+
+      <button class="icon-btn" id="settings-btn" title="Configuración"><span>⚙️</span></button>
+      <button class="icon-btn" id="share-btn"    title="Compartir"><span>↗️</span></button>
+    </div>
+  </div>
+
+  <div class="app-container">
+
+    <!-- ── Sidebar de componentes ───────────────────────────── -->
+    <div class="sidebar">
+      <div class="sidebar-section">
+        <div class="section-header">
+          <span class="section-icon">🔌</span>
+          <h3>Componentes</h3>
+        </div>
+
+        <div class="component-group">
+          <div class="group-label">Fuentes de Energía</div>
+          <div class="component-card" draggable="true" data-type="battery"   data-name="Batería">
+            <div class="card-preview"><div class="preview-3d">🔋</div></div>
+            <div class="card-info"><div class="card-title">Batería</div><div class="card-subtitle">Fuente DC</div></div>
+          </div>
+          <div class="component-card" draggable="true" data-type="ac-source" data-name="Fuente AC">
+            <div class="card-preview"><div class="preview-3d">⚡</div></div>
+            <div class="card-info"><div class="card-title">Fuente AC</div><div class="card-subtitle">Corriente Alterna</div></div>
+          </div>
+        </div>
+
+        <div class="component-group">
+          <div class="group-label">Componentes Pasivos</div>
+          <div class="component-card" draggable="true" data-type="resistor"  data-name="Resistencia">
+            <div class="card-preview"><div class="preview-3d">▬</div></div>
+            <div class="card-info"><div class="card-title">Resistencia</div><div class="card-subtitle">Ohmios (Ω)</div></div>
+          </div>
+          <div class="component-card" draggable="true" data-type="capacitor" data-name="Capacitor">
+            <div class="card-preview"><div class="preview-3d">╫</div></div>
+            <div class="card-info"><div class="card-title">Capacitor</div><div class="card-subtitle">Faradios (F)</div></div>
+          </div>
+          <div class="component-card" draggable="true" data-type="inductor"  data-name="Inductor">
+            <div class="card-preview"><div class="preview-3d">⊸</div></div>
+            <div class="card-info"><div class="card-title">Inductor</div><div class="card-subtitle">Henrios (H)</div></div>
+          </div>
+        </div>
+
+        <div class="component-group">
+          <div class="group-label">Medición</div>
+          <div class="component-card" draggable="true" data-type="voltmeter" data-name="Voltímetro">
+            <div class="card-preview"><div class="preview-3d">V</div></div>
+            <div class="card-info"><div class="card-title">Voltímetro</div><div class="card-subtitle">Medir Voltaje</div></div>
+          </div>
+          <div class="component-card" draggable="true" data-type="ammeter"   data-name="Amperímetro">
+            <div class="card-preview"><div class="preview-3d">A</div></div>
+            <div class="card-info"><div class="card-title">Amperímetro</div><div class="card-subtitle">Medir Corriente</div></div>
+          </div>
+        </div>
+
+        <div class="component-group">
+          <div class="group-label">Componentes Activos</div>
+          <div class="component-card" draggable="true" data-type="led"         data-name="LED">
+            <div class="card-preview"><div class="preview-3d">💡</div></div>
+            <div class="card-info"><div class="card-title">LED</div><div class="card-subtitle">Diodo Emisor</div></div>
+          </div>
+          <div class="component-card" draggable="true" data-type="switch"      data-name="Interruptor">
+            <div class="card-preview"><div class="preview-3d">⏚</div></div>
+            <div class="card-info"><div class="card-title">Interruptor</div><div class="card-subtitle">Control ON/OFF</div></div>
+          </div>
+          <div class="component-card" draggable="true" data-type="diode"       data-name="Diodo">
+            <div class="card-preview"><div class="preview-3d">◄</div></div>
+            <div class="card-info"><div class="card-title">Diodo</div><div class="card-subtitle">Unidireccional</div></div>
+          </div>
+          <div class="component-card" draggable="true" data-type="transistor"  data-name="Transistor">
+            <div class="card-preview"><div class="preview-3d">🔺</div></div>
+            <div class="card-info"><div class="card-title">Transistor</div><div class="card-subtitle">Amplificador</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Área de vistas ───────────────────────────────────── -->
+    <div class="main-area">
+
+      <!-- Vista Workspace -->
+      <div class="view-panel active" id="workspace-view">
+        <div class="toolbar">
+          <div class="tool-group">
+            <button class="tool-button active" data-tool="select" title="Seleccionar (V)">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                <path d="M4 2L14 9L9 10L7 15L4 2Z" stroke="currentColor" stroke-width="1.5" fill="currentColor" fill-opacity="0.2"/>
+              </svg>
+            </button>
+            <button class="tool-button" data-tool="wire" title="Conectar (C)">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                <path d="M3 9H15M12 6L15 9L12 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </button>
+            <button class="tool-button" data-tool="move" title="Mover (M)">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                <path d="M9 3V15M3 9H15M6 6L3 9L6 12M12 6L15 9L12 12M6 12L9 15L12 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </button>
+          </div>
+
+          <div class="tool-group">
+            <button class="tool-button" id="undo-btn" title="Deshacer (Ctrl+Z)">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                <path d="M3 7H11a4 4 0 010 8H7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M6 4L3 7L6 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <button class="tool-button" id="redo-btn" title="Rehacer (Ctrl+Y)">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                <path d="M15 7H7a4 4 0 000 8h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M12 4L15 7L12 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
+
+          <div class="tool-group">
+            <button class="tool-button simulate-btn" id="simulate-btn" title="Simular">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M6 4L15 10L6 16V4Z" stroke="currentColor" stroke-width="1.5" fill="currentColor"/>
+              </svg>
+            </button>
+            <button class="tool-button danger" id="clear-all" title="Limpiar todo">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                <path d="M3 5H15M7 5V3H11V5M6 5V14H12V5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="canvas-area">
+          <canvas id="three-canvas"></canvas>
+        </div>
+
+        <div class="bottom-toolbar">
+          <div class="view-controls">
+            <button class="view-btn" data-view="perspective" title="Vista 3D">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                <path d="M9 2L16 6V12L9 16L2 12V6L9 2Z" stroke="currentColor" stroke-width="1.5"/>
+              </svg>
+            </button>
+            <button class="view-btn" data-view="top" title="Vista Superior">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                <circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.5"/>
+                <circle cx="9" cy="9" r="2" fill="currentColor"/>
+              </svg>
+            </button>
+            <button class="view-btn" data-view="front" title="Vista Frontal">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                <rect x="3" y="4" width="12" height="10" rx="1" stroke="currentColor" stroke-width="1.5"/>
+              </svg>
+            </button>
+            <button class="view-btn" data-view="reset" title="Reiniciar Cámara">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                <path d="M14 4L4 14M4 4L14 14" stroke="currentColor" stroke-width="1.5"/>
+                <circle cx="9" cy="9" r="7" stroke="currentColor" stroke-width="1.5"/>
+              </svg>
+            </button>
+          </div>
+
+          <div class="stats-panel">
+            <div class="stat-item">
+              <span class="stat-label">Componentes</span>
+              <span class="stat-value" id="comp-count">0</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Conexiones</span>
+              <span class="stat-value" id="wire-count">0</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Estado</span>
+              <span class="stat-value status" id="circuit-status">Abierto</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Vista Biblioteca -->
+      <div class="view-panel" id="library-view">
+        <div class="library-header">
+          <div class="library-stats">
+            <div class="lib-stat"><span id="stat-total">0</span><label>Circuitos</label></div>
+            <div class="lib-stat"><span id="stat-categories">0</span><label>Categorías</label></div>
+            <div class="lib-stat"><span id="stat-favorite">—</span><label>Favorita</label></div>
+          </div>
+          <div class="library-actions">
+            <button id="save-current-circuit">
+              <animated-icons
+  src="https://animatedicons.co/get-icon?name=save&style=minimalistic&token=d0b10a53-76de-4fa4-9d98-9df58ecced79"
+  trigger="loop-on-hover"
+  attributes='{"variationThumbColour":"#536DFE","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1,"defaultColours":{"group-1":"#000000","group-2":"#536DFE","background":"#FFFFFF"}}'
+  height="30"
+  width="30"
+></animated-icons> Guardar Actual</button>
+            <button id="import-circuit">
+              
+              <animated-icons
+  src="https://animatedicons.co/get-icon?name=Load%20File&style=minimalistic&token=71393305-fa8f-4324-8928-26e832d15caa"
+  trigger="loop-on-hover"
+  attributes='{"variationThumbColour":"#536DFE","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1.06,"defaultColours":{"group-1":"#000000","group-2":"#536DFE","background":"#FFFFFF"}}'
+  height="30"
+  width="30"
+></animated-icons>
+              Importar</button>
+            <input type="file" id="import-file-input" accept=".json" style="display:none">
+          </div>
+        </div>
+<div style="padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.06)">
+  <input
+    id="library-search"
+    type="text"
+    placeholder="🔍 Buscar circuito..."
+    style="width:100%;padding:9px 12px;background:#2c2c2e;border:1px solid #3a3a3c;border-radius:8px;color:white;font-size:13px;box-sizing:border-box;outline:none"
+  >
+</div>
+<div class="circuits-grid" id="circuits-grid"></div>
+      </div>
+
+      <!-- Vista Análisis (placeholder) -->
+<!-- Vista Análisis -->
+<div class="view-panel" id="analysis-view">
+
+  <!-- Estado vacío — antes de simular -->
+  <div id="analysis-empty" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:16px;color:#3a3a3c">
+    <div style="font-size:56px">🤖</div>
+    <div style="font-size:16px;font-weight:600;color:#636366">Sin análisis todavía</div>
+    <div style="font-size:13px;color:#3a3a3c;text-align:center;max-width:280px;line-height:1.6">Construye un circuito y activa la simulación — la IA lo analizará automáticamente</div>
+    <button onclick="document.querySelector('.menu-item[data-view=workspace]').click()" style="margin-top:8px;padding:10px 20px;background:#007AFF;border:none;border-radius:10px;color:white;font-size:13px;font-weight:600;cursor:pointer">
+      Ir al simulador →
+    </button>
+  </div>
+
+  <!-- Reporte IA — aparece cuando hay simulación activa -->
+  <div id="analysis-report" style="display:none;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:14px">
+
+    <!-- Header resultado -->
+    <div id="an-header" style="background:#1c1c1e;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:20px;display:flex;align-items:center;gap:16px">
+      <div id="an-result-icon" style="font-size:42px">🤖</div>
+      <div style="flex:1">
+        <div id="an-result-title" style="font-size:17px;font-weight:700;color:#f5f5f7;margin-bottom:4px">Analizando...</div>
+        <div id="an-result-subtitle" style="font-size:13px;color:#636366">Esperando simulación</div>
+      </div>
+      <div id="an-loading" style="display:none;width:24px;height:24px;border:2px solid #3a3a3c;border-top-color:#007AFF;border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0"></div>
+    </div>
+
+    <!-- Descripción IA -->
+    <div style="background:#1c1c1e;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:20px">
+      <div style="font-size:11px;font-weight:600;color:#636366;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px">📝 Qué construiste</div>
+      <div id="an-description" style="font-size:14px;color:#aeaeb2;line-height:1.7">—</div>
+    </div>
+
+    <!-- Métricas grandes -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
+
+      <div style="background:#1c1c1e;border:1px solid rgba(0,122,255,0.2);border-radius:14px;padding:16px;text-align:center">
+        <div style="font-size:11px;color:#007AFF;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Voltaje</div>
+        <div id="an-voltage" style="font-size:24px;font-weight:700;color:#f5f5f7">—</div>
+      </div>
+
+      <div style="background:#1c1c1e;border:1px solid rgba(52,199,89,0.2);border-radius:14px;padding:16px;text-align:center">
+        <div style="font-size:11px;color:#34C759;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Corriente</div>
+        <div id="an-current" style="font-size:24px;font-weight:700;color:#f5f5f7">—</div>
+      </div>
+
+      <div style="background:#1c1c1e;border:1px solid rgba(255,149,0,0.2);border-radius:14px;padding:16px;text-align:center">
+        <div style="font-size:11px;color:#FF9500;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Resistencia</div>
+        <div id="an-resistance" style="font-size:24px;font-weight:700;color:#f5f5f7">—</div>
+      </div>
+
+      <div style="background:#1c1c1e;border:1px solid rgba(255,55,95,0.2);border-radius:14px;padding:16px;text-align:center">
+        <div style="font-size:11px;color:#FF375F;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Potencia</div>
+        <div id="an-power" style="font-size:24px;font-weight:700;color:#f5f5f7">—</div>
+      </div>
+
+    </div>
+
+    <!-- Componentes detectados -->
+    <div style="background:#1c1c1e;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:20px">
+      <div style="font-size:11px;font-weight:600;color:#636366;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px">🔌 Componentes en el circuito</div>
+      <div id="an-components" style="display:flex;flex-wrap:wrap;gap:8px">
+        <span style="font-size:12px;color:#3a3a3c;font-style:italic">Sin componentes</span>
+      </div>
+    </div>
+
+    <!-- 3 tarjetas: bien / mejorar / dato curioso -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+
+      <div style="background:#1c1c1e;border:1px solid rgba(52,199,89,0.25);border-radius:14px;padding:16px">
+        <div style="font-size:16px;margin-bottom:6px">✅</div>
+        <div style="font-size:11px;font-weight:600;color:#34C759;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Lo hiciste bien</div>
+        <div id="an-good" style="font-size:12px;color:#aeaeb2;line-height:1.6">—</div>
+      </div>
+
+      <div style="background:#1c1c1e;border:1px solid rgba(255,149,0,0.25);border-radius:14px;padding:16px">
+        <div style="font-size:16px;margin-bottom:6px">⚠️</div>
+        <div style="font-size:11px;font-weight:600;color:#FF9500;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Podrías mejorar</div>
+        <div id="an-improve" style="font-size:12px;color:#aeaeb2;line-height:1.6">—</div>
+      </div>
+
+      <div style="background:#1c1c1e;border:1px solid rgba(88,86,214,0.25);border-radius:14px;padding:16px">
+        <div style="font-size:16px;margin-bottom:6px">💡</div>
+        <div style="font-size:11px;font-weight:600;color:#5856D6;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">¿Sabías que...?</div>
+        <div id="an-fact" style="font-size:12px;color:#aeaeb2;line-height:1.6">—</div>
+      </div>
+
+    </div>
+
+    <!-- Tabs secundarios: Gráfica y Comparar -->
+    <div style="background:#1c1c1e;border:1px solid rgba(255,255,255,0.08);border-radius:16px;overflow:hidden">
+      <div style="display:flex;border-bottom:1px solid rgba(255,255,255,0.06)">
+        <button class="analysis-tab" data-tab="chart" style="flex:1;padding:12px;border:none;background:rgba(255,255,255,0.05);color:#f5f5f7;cursor:pointer;font-size:12px;font-weight:500">📈 Gráfica</button>
+        <button class="analysis-tab" data-tab="compare" style="flex:1;padding:12px;border:none;background:transparent;color:#636366;cursor:pointer;font-size:12px;font-weight:500;border-left:1px solid rgba(255,255,255,0.06)">⚖️ Comparar</button>
+      </div>
+
+      <!-- Gráfica -->
+      <div id="analysis-tab-chart" class="analysis-panel" style="padding:16px">
+        <canvas id="analysis-chart" height="160" style="width:100%;border-radius:8px"></canvas>
+        <div style="text-align:center;font-size:11px;color:#3a3a3c;margin-top:8px">Activa la simulación para ver datos</div>
+      </div>
+
+      <!-- Comparar -->
+      <div id="analysis-tab-compare" class="analysis-panel" style="padding:16px;display:none">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+          <div style="background:#2c2c2e;border-radius:10px;padding:12px">
+            <div style="font-size:11px;font-weight:600;color:#007AFF;margin-bottom:8px">Circuito A</div>
+            <div id="compare-a" style="font-size:12px;color:#3a3a3c;font-style:italic">Sin datos</div>
+            <button id="save-circuit-a" style="margin-top:10px;width:100%;padding:6px;background:#007AFF;border:none;border-radius:6px;color:white;font-size:11px;cursor:pointer">Guardar actual</button>
+          </div>
+          <div style="background:#2c2c2e;border-radius:10px;padding:12px">
+            <div style="font-size:11px;font-weight:600;color:#34C759;margin-bottom:8px">Circuito B</div>
+            <div id="compare-b" style="font-size:12px;color:#3a3a3c;font-style:italic">Sin datos</div>
+            <button id="save-circuit-b" style="margin-top:10px;width:100%;padding:6px;background:#34C759;border:none;border-radius:6px;color:white;font-size:11px;cursor:pointer">Guardar actual</button>
+          </div>
+        </div>
+        <table style="width:100%;border-collapse:collapse;font-size:12px">
+          <thead>
+            <tr style="background:#2c2c2e">
+              <th style="padding:8px 12px;text-align:left;color:#636366;font-weight:500">Métrica</th>
+              <th style="padding:8px 12px;text-align:center;color:#007AFF;font-weight:500">A</th>
+              <th style="padding:8px 12px;text-align:center;color:#34C759;font-weight:500">B</th>
+              <th style="padding:8px 12px;text-align:center;color:#636366;font-weight:500">Δ</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-top:1px solid rgba(255,255,255,0.04)"><td style="padding:8px 12px;color:#aeaeb2">Voltaje</td><td id="cmp-a-v" style="padding:8px 12px;text-align:center;color:#636366">—</td><td id="cmp-b-v" style="padding:8px 12px;text-align:center;color:#636366">—</td><td id="cmp-d-v" style="padding:8px 12px;text-align:center;color:#636366">—</td></tr>
+            <tr style="border-top:1px solid rgba(255,255,255,0.04)"><td style="padding:8px 12px;color:#aeaeb2">Corriente</td><td id="cmp-a-c" style="padding:8px 12px;text-align:center;color:#636366">—</td><td id="cmp-b-c" style="padding:8px 12px;text-align:center;color:#636366">—</td><td id="cmp-d-c" style="padding:8px 12px;text-align:center;color:#636366">—</td></tr>
+            <tr style="border-top:1px solid rgba(255,255,255,0.04)"><td style="padding:8px 12px;color:#aeaeb2">Resistencia</td><td id="cmp-a-r" style="padding:8px 12px;text-align:center;color:#636366">—</td><td id="cmp-b-r" style="padding:8px 12px;text-align:center;color:#636366">—</td><td id="cmp-d-r" style="padding:8px 12px;text-align:center;color:#636366">—</td></tr>
+            <tr style="border-top:1px solid rgba(255,255,255,0.04)"><td style="padding:8px 12px;color:#aeaeb2">Potencia</td><td id="cmp-a-p" style="padding:8px 12px;text-align:center;color:#636366">—</td><td id="cmp-b-p" style="padding:8px 12px;text-align:center;color:#636366">—</td><td id="cmp-d-p" style="padding:8px 12px;text-align:center;color:#636366">—</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+    </div>
+    <!-- ── Inspector ─────────────────────────────────────────── -->
+    <div class="inspector">
+      <div class="inspector-header">
+        <h3>Inspector</h3>
+        <button class="collapse-btn" id="collapse-inspector">−</button>
+      </div>
+
+      <div class="inspector-content">
+        <div class="inspector-section">
+          <div class="section-title">Métricas del Circuito</div>
+          <div class="metric-grid">
+            <div class="metric-card">
+              <div class="metric-icon">⚡</div>
+              <div class="metric-content">
+                <div class="metric-label">Voltaje</div>
+                <div class="metric-value" id="total-voltage">0.0 V</div>
+              </div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-icon">🔄</div>
+              <div class="metric-content">
+                <div class="metric-label">Corriente</div>
+                <div class="metric-value" id="total-current">0.00 A</div>
+              </div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-icon">▬</div>
+              <div class="metric-content">
+                <div class="metric-label">Resistencia</div>
+                <div class="metric-value" id="total-resistance">∞ Ω</div>
+              </div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-icon">💡</div>
+              <div class="metric-content">
+                <div class="metric-label">Potencia</div>
+                <div class="metric-value" id="total-power">0.00 W</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="inspector-section" id="component-props" style="display:none">
+          <div class="section-title">Propiedades del Componente</div>
+          <div id="props-content"></div>
+        </div>
+
+        <div class="inspector-section">
+          <div class="section-title">Leyes de la Física</div>
+          <div class="law-card">
+            <div class="law-title">Ley de Ohm</div>
+            <div class="law-formula">V = I × R</div>
+            <div class="law-description">El voltaje es igual a la corriente por la resistencia</div>
+          </div>
+          <div class="law-card">
+            <div class="law-title">Potencia Eléctrica</div>
+            <div class="law-formula">P = V × I</div>
+            <div class="law-description">La potencia es igual al voltaje por la corriente</div>
+          </div>
+          <div class="law-card">
+            <div class="law-title">Resistencia en Serie</div>
+            <div class="law-formula">R<sub>eq</sub> = R₁ + R₂ + ...</div>
+            <div class="law-description">Resistencia total en circuito en serie</div>
+          </div>
+        </div>
+
+        <!-- Experimentos -->
+        <div class="inspector-section">
+          <div class="section-title">🧪 Experimentos</div>
+          <div class="experiment-category">
+            <div class="category-label">✅ Circuitos Correctos</div>
+            <button class="experiment-btn" data-exp="ledSimple">
+              <div class="exp-icon">💡</div>
+              <div class="exp-content"><div class="exp-name">LED Simple</div><div class="exp-desc">Circuito básico funcional</div></div>
+            </button>
+            <button class="experiment-btn" data-exp="ledConResistor">
+              <div class="exp-icon">💡🔌</div>
+              <div class="exp-content"><div class="exp-name">LED + Resistencia</div><div class="exp-desc">Protección con resistor</div></div>
+            </button>
+            <button class="experiment-btn" data-exp="serieComplejo">
+              <div class="exp-icon">🔌</div>
+              <div class="exp-content"><div class="exp-name">Serie Complejo</div><div class="exp-desc">R1 + R2 en serie</div></div>
+            </button>
+          </div>
+          <div class="experiment-category">
+            <div class="category-label">❌ Errores Comunes</div>
+            <button class="experiment-btn error" data-exp="cortocircuito">
+              <div class="exp-icon">⚠️</div>
+              <div class="exp-content"><div class="exp-name">Cortocircuito</div><div class="exp-desc">¡Peligro! No hacer en vida real</div></div>
+            </button>
+            <button class="experiment-btn error" data-exp="ledReverso">
+              <div class="exp-icon">💡❌</div>
+              <div class="exp-content"><div class="exp-name">LED al Revés</div><div class="exp-desc">Polaridad incorrecta</div></div>
+            </button>
+            <button class="experiment-btn warning" data-exp="switchIncompleto">
+              <div class="exp-icon">⏚</div>
+              <div class="exp-content"><div class="exp-name">Switch Incompleto</div><div class="exp-desc">Falta cable de salida</div></div>
+            </button>
+          </div>
+        </div>
+
+        <div class="inspector-section" id="errors-section" style="display:none">
+          <div class="section-title">⚠️ Errores Detectados</div>
+          <div id="errors-list"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Modal guardar circuito -->
+  <div id="save-circuit-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:1000;align-items:center;justify-content:center">
+    <div style="background:#1c1c1e;border:1px solid #3a3a3c;border-radius:16px;padding:24px;width:320px">
+      <h3 style="margin:0 0 16px; display:flex;align-items:center;gap:8px">
+        <animated-icons
+  src="https://animatedicons.co/get-icon?name=save&style=minimalistic&token=d0b10a53-76de-4fa4-9d98-9df58ecced79"
+  trigger="loop"
+  attributes='{"variationThumbColour":"#536DFE","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1,"defaultColours":{"group-1":"#000000","group-2":"#536DFE","background":"#FFFFFF"}}'
+  height="30"
+  width="30"
+></animated-icons>
+        Guardar Circuito</h3>
+      <input id="circuit-name-input"     type="text"   placeholder="Nombre del circuito"
+             style="width:100%;padding:10px;margin-bottom:10px;background:#2c2c2e;border:1px solid #3a3a3c;border-radius:8px;color:white;box-sizing:border-box">
+      <select id="circuit-category-input"
+              style="width:100%;padding:10px;margin-bottom:16px;background:#2c2c2e;border:1px solid #3a3a3c;border-radius:8px;color:white;box-sizing:border-box">
+        <option>General</option>
+        <option>Básico</option>
+        <option>Avanzado</option>
+        <option>Experimento</option>
+      </select>
+      <div style="font-size:12px;color:#888;margin-bottom:16px">
+        <span id="preview-components">0 componentes</span> · <span id="preview-wires">0 cables</span>
+      </div>
+      <div style="display:flex;gap:8px; flex-direction: column;">
+        <button id="cancel-save-circuit"  style="flex:1;padding:10px;background:#3a3a3c;border:none;border-radius:8px;color:white;cursor:pointer">Cancelar</button>
+        <button id="confirm-save-circuit" style="flex:1;padding:10px;background:#007AFF;border:none;border-radius:8px;color:white;cursor:pointer">Guardar</button>
+        <button id="overwrite-save-circuit" style="display:none;width:100%;padding:10px;background:#FF9500;border:none;border-radius:8px;color:white;cursor:pointer;margin-top:6px">
+  🔄 Sobreescribir circuito actual
+</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="notification-container"></div>
+
+  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.css"/>
+<script src="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.js.iife.js"></script>
+  <!-- Vite entry point — NO más CDN de Three.js -->
+</body>
+</html>
