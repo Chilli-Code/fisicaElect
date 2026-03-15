@@ -203,7 +203,7 @@ function onCanvasRightClick(event: MouseEvent, state: AppState, sm: SceneManager
   if (hits.length > 0) {
     const wire = state.wires.find(w => w.mesh === hits[0]!.object)
     if (wire) {
-      ;(wire.mesh.material as THREE.LineBasicMaterial).color.setHex(0xff3b30)
+      ;((wire.mesh as THREE.Line).material as THREE.LineBasicMaterial).color.setHex(0xff3b30)
       setTimeout(() => {
         saveSnapshot(state, 'Antes de eliminar cable')
         wm.delete(wire.id)
@@ -247,15 +247,14 @@ function onMouseMove(event: MouseEvent, state: AppState, sm: SceneManager, wm: W
     sm.raycaster.setFromCamera(sm.mouse, sm.camera)
     const indicators = getIndicators()
     const hits = sm.raycaster.intersectObjects(indicators)
-    indicators.forEach(ind => {
-      ind.scale.set(1, 1, 1)
-      ;(ind.material as THREE.MeshBasicMaterial).opacity = 0.8
-    })
-    if (hits.length > 0) {
-      hits[0]!.object.scale.set(1.3, 1.3, 1.3)
-      ;(hits[0]!.object.material as THREE.MeshBasicMaterial).opacity = 1.0
-      ;(event.target as HTMLElement).style.cursor = 'pointer'
-    } else {
+indicators.forEach(ind => {
+  ind.scale.set(1, 1, 1)
+  ;((ind as THREE.Mesh).material as THREE.MeshBasicMaterial).opacity = 0.8
+})
+if (hits.length > 0) {
+  hits[0]!.object.scale.set(1.3, 1.3, 1.3)
+  ;((hits[0]!.object as THREE.Mesh).material as THREE.MeshBasicMaterial).opacity = 1.0
+}else {
       ;(event.target as HTMLElement).style.cursor = 'crosshair'
     }
   }

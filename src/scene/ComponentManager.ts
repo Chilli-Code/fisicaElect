@@ -44,7 +44,7 @@ export class ComponentManager {
       mesh,
       position: { x, z },
       terminals,
-      isOn: type === 'switch' ? true : undefined,
+      ...(type === 'switch' ? { isOn: true as const } : {}),
     }
 
     this.state.components.push(component)

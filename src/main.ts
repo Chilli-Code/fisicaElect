@@ -30,6 +30,8 @@ import { setupTour } from '@ui/appTour'
 import { getSession, renderUserBadge } from '@ui/auth'
 import { showLoginScreen } from '@ui/loginScreen'
 import { setupSettingsModal } from '@ui/settingsModal'
+
+
 const user = getSession()
 if (!user) {
   showLoginScreen(() => initApp())
