@@ -41,7 +41,7 @@ function thumbnail(state: AppState): string {
   if (canvas) {
     try { return canvas.toDataURL('image/jpeg', 0.6) } catch { /* fallback */ }
   }
-  // fallback emoji si falla
+ 
   const icons: Record<string, string> = {
     battery:'🔋', led:'💡', resistor:'▬', capacitor:'╫',
     inductor:'⊸', switch:'⏚', diode:'◄', transistor:'🔺',

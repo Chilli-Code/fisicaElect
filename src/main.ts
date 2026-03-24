@@ -1,11 +1,9 @@
 // ============================================================
 // src/main.ts
-// Punto de entrada. Conecta todos los módulos.
 // ============================================================
-
 import { state } from '@core/state'
-import { saveSnapshot, getUndoSnapshot, getRedoSnapshot } from '@core/history'
-import { calculateCircuitMetrics, calculateCurrentFlow, toggleSwitch, updateLEDAnimation } from '@core/circuit'
+import { saveSnapshot } from '@core/history'
+import { calculateCurrentFlow, updateLEDAnimation } from '@core/circuit'
 import { emit, on, AppEvents } from '@core/events'
 import type { NotificationEvent } from '@core/types'
 
@@ -14,8 +12,7 @@ import { ComponentManager } from '@scene/ComponentManager'
 import { WireManager } from '@scene/WireManager'
 
 import { getComponentTemplates } from '@components/templates'
-import { animateWireFlow, sparkEffect, pulseComponent } from '@utils/animations'
-import { showTerminalIndicators, hideTerminalIndicators } from '@ui/terminalIndicators'
+import { animateWireFlow } from '@utils/animations'
 import { setupNotifications, showNotification } from '@ui/notifications'
 import { setupToolbar } from '@ui/toolbar'
 import { setupInspector, updateInspector } from '@ui/inspector'
@@ -31,71 +28,70 @@ import { getSession, renderUserBadge } from '@ui/auth'
 import { showLoginScreen } from '@ui/loginScreen'
 import { setupSettingsModal } from '@ui/settingsModal'
 
+const isMobile = window.innerWidth < 768 || 'ontouchstart' in window
 
-const user = getSession()
-if (!user) {
-  showLoginScreen(() => initApp())
+if (isMobile) {
+  import('./main.mobile').then(m => m.initMobile())
 } else {
-  initApp()
+  const user = getSession()
+  if (!user) {
+    showLoginScreen(() => initApp())
+  } else {
+    initApp()
+  }
 }
 
 function initApp(): void {
   renderUserBadge()
   setupSettingsModal()
-// ── Canvas y contenedor ──────────────────────────────────────
-const canvas = document.getElementById('three-canvas') as HTMLCanvasElement
-const container = document.querySelector('.canvas-area') as HTMLElement
 
-// ── Inicialización ────────────────────────────────────────────
-const sceneManager = new SceneManager(canvas, container)
-const templates = getComponentTemplates()
-const componentManager = new ComponentManager(sceneManager.scene, state, templates)
-const wireManager = new WireManager(sceneManager.scene, state)
+  const canvas = document.getElementById('three-canvas') as HTMLCanvasElement
+  const container = document.querySelector('.canvas-area') as HTMLElement
 
-// ── Loop de animación ─────────────────────────────────────────
-sceneManager.onFrame(() => {
-  if (state.isSimulating) {
-    const { hasCurrent } = calculateCurrentFlow(state)
-    state.components.forEach(comp => {
-      if (comp.type === 'led') updateLEDAnimation(comp, hasCurrent)
-    })
-    if (hasCurrent) {
-      state.wires.forEach(wire => animateWireFlow(wire, Date.now() * 0.001))
+  const sceneManager = new SceneManager(canvas, container)
+  const templates = getComponentTemplates()
+  const componentManager = new ComponentManager(sceneManager.scene, state, templates)
+  const wireManager = new WireManager(sceneManager.scene, state)
+
+  sceneManager.onFrame(() => {
+    if (state.isSimulating) {
+      const { hasCurrent } = calculateCurrentFlow(state)
+      state.components.forEach(comp => {
+        if (comp.type === 'led') updateLEDAnimation(comp, hasCurrent)
+      })
+      if (hasCurrent) {
+        state.wires.forEach(wire => animateWireFlow(wire, Date.now() * 0.001))
+      }
     }
-  }
-})
-sceneManager.start()
+  })
+  sceneManager.start()
 
-// ── Iniciar UI ────────────────────────────────────────────────
-setupNotifications()
-setupToolbar(state, sceneManager, componentManager, wireManager)
-setupInspector(state, templates)
-setupDragDrop(state, container, sceneManager, componentManager, wireManager)
-setupKeyboard(state, sceneManager, componentManager, wireManager)
-setupExperiments(state, sceneManager, componentManager, wireManager)
-setupLibrary(state, componentManager, wireManager)
-setupViewButtons(sceneManager)
-setupWireTooltip(state, sceneManager, canvas)
-setupLegendButton()
-setupTour()
+  setupNotifications()
+  setupToolbar(state, sceneManager, componentManager, wireManager)
+  setupInspector(state, templates)
+  setupDragDrop(state, container, sceneManager, componentManager, wireManager)
+  setupKeyboard(state, sceneManager, componentManager, wireManager)
+  setupExperiments(state, sceneManager, componentManager, wireManager)
+  setupLibrary(state, componentManager, wireManager)
+  setupViewButtons(sceneManager)
+  setupWireTooltip(state, sceneManager, canvas)
+  setupLegendButton()
+  setupTour()
 
-// ── Escuchar eventos globales ─────────────────────────────────
-on(AppEvents.STATE_CHANGED, () => {
-  updateInspector(state, templates)
-  wireManager.updateAll(calculateCurrentFlow(state).hasCurrent, state.isSimulating)
-})
+  on(AppEvents.STATE_CHANGED, () => {
+    updateInspector(state, templates)
+    wireManager.updateAll(calculateCurrentFlow(state).hasCurrent, state.isSimulating)
+  })
 
-on<NotificationEvent>(AppEvents.NOTIFICATION, ({ type, title, message }) => {
-  showNotification(type, title, message)
-})
+  on<NotificationEvent>(AppEvents.NOTIFICATION, ({ type, title, message }) => {
+    showNotification(type, title, message)
+  })
 
-// ── Estado inicial ────────────────────────────────────────────
-saveSnapshot(state, 'Estado inicial')
-emit(AppEvents.STATE_CHANGED, null)
-emit<NotificationEvent>(AppEvents.NOTIFICATION, {
-  type: 'success',
-  title: '¡Listo!',
-  message: 'Circuit Lab Pro cargado ⚡',
-})
-
+  saveSnapshot(state, 'Estado inicial')
+  emit(AppEvents.STATE_CHANGED, null)
+  emit<NotificationEvent>(AppEvents.NOTIFICATION, {
+    type: 'success',
+    title: '¡Listo!',
+    message: 'Circuit Lab Pro cargado ⚡',
+  })
 }

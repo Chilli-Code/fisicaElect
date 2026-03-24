@@ -175,7 +175,7 @@ function onCanvasClick(
   }
 
   const allObjects = componentManager.getAllMeshes()
-  const intersects = sceneManager.raycaster.intersectObjects(allObjects)
+const intersects = sceneManager.raycaster.intersectObjects(allObjects as any)
   if (intersects.length > 0) {
     let obj = intersects[0]!.object
     while (obj.parent && !obj.userData['id']) obj = obj.parent!
@@ -218,7 +218,7 @@ function onMouseDown(event: MouseEvent, state: AppState, sm: SceneManager, cm: C
   if (state.currentTool !== 'move') return
   sm.updateMouseFromEvent(event, event.target as HTMLElement)
   sm.raycaster.setFromCamera(sm.mouse, sm.camera)
-  const hits = sm.raycaster.intersectObjects(cm.getAllMeshes())
+  const hits = sm.raycaster.intersectObjects(cm.getAllMeshes() as any)
   if (hits.length > 0) {
     let obj = hits[0]!.object
     while (obj.parent && !obj.userData['id']) obj = obj.parent!

@@ -13,7 +13,7 @@ import type {
 } from '@core/types'
 
 export class ComponentManager {
-  // Mapa rápido meshId → component
+  // Mapa r├ípido meshId ÔåÆ component
   public meshMap = new Map<string, THREE.Object3D>()
 
   constructor(

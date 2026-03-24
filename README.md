@@ -5,12 +5,17 @@ Simulador 3D interactivo de física eléctrica. Construye, conecta y experimenta
 ---
 
 ## Inicio rápido
+
 ```bash
 npm install
 npm run dev       # Abre en http://localhost:5173
 npm run build     # Compila a /dist
 npm run typecheck # Solo verificar tipos sin compilar
+npm run preview   # Previsualizar build
 ```
+
+### Deployment
+El proyecto se despliega automáticamente a **GitHub Pages** en cada push a `main` mediante GitHub Actions.
 
 ---
 
@@ -19,7 +24,9 @@ npm run typecheck # Solo verificar tipos sin compilar
 | Tecnología | Uso |
 |---|---|
 | TypeScript + Vite | Build tool y tipado estricto (ES2022) |
-| Three.js | Renderizado 3D |
+| Three.js | Renderizado 3D (escritorio) |
+| Babylon.js | Renderizado 3D (móvil/futuro) |
+| Lottie | Animaciones de iconos |
 | Driver.js | Tour guiado de la app |
 | animatedicons.co | Iconos animados en menú y botones |
 | localStorage | Sesión de usuario y biblioteca |
@@ -27,51 +34,66 @@ npm run typecheck # Solo verificar tipos sin compilar
 ---
 
 ## Estructura del proyecto
+
 ```
 fisicaElect/
 ├── index.html              # Entry point para Vite
-├── styles.css              # Estilos globales
-├── vite.config.ts          # Alias @core, @scene, @ui, etc.
-├── tsconfig.json           # TypeScript estricto ES2022
+├── public/
+│   └── styles.css         # Estilos globales
+├── vite.config.ts         # Alias @core, @scene, @ui, etc.
+├── tsconfig.json          # TypeScript estricto ES2022
 ├── package.json
 └── src/
-    ├── main.ts             # Punto de entrada — conecta todos los módulos
+    ├── main.ts            # Punto de entrada — conecta todos los módulos
     │
-    ├── core/               # Lógica pura — sin Three.js, sin DOM
-    │   ├── types.ts        # Todos los tipos del proyecto
-    │   ├── state.ts        # Estado global (AppState)
-    │   ├── circuit.ts      # Cálculos eléctricos (Ohm, métricas, voltímetro)
-    │   ├── history.ts      # Undo / Redo hasta 50 acciones
-    │   ├── events.ts       # Bus de eventos desacoplado
-    │   └── user.ts         # Tipos del perfil de usuario
+    ├── core/              # Lógica pura — sin Three.js, sin DOM
+    │   ├── types.ts       # Todos los tipos del proyecto
+    │   ├── state.ts       # Estado global (AppState)
+    │   ├── circuit.ts     # Cálculos eléctricos (Ohm, métricas, voltímetro)
+    │   ├── history.ts     # Undo / Redo hasta 50 acciones
+    │   ├── events.ts      # Bus de eventos desacoplado
+    │   └── user.ts        # Tipos del perfil de usuario
     │
-    ├── scene/              # Three.js — gestión de objetos 3D
+    ├── scene/             # Three.js — gestión de objetos 3D
     │   ├── SceneManager.ts      # Escena, cámara, renderer, loop
     │   ├── ComponentManager.ts  # CRUD de componentes en escena
     │   └── WireManager.ts       # Cables con colores IEC 60446
     │
-    ├── components/         # Factories de meshes 3D por tipo
-    │   ├── _factory.ts     # Helpers compartidos
-    │   ├── templates.ts    # Registro de plantillas
-    │   └── *.ts            # Un archivo por componente
+    ├── components/        # Factories de meshes 3D por tipo
+    │   ├── _factory.ts    # Helpers compartidos
+    │   ├── templates.ts   # Registro de plantillas
+    │   ├── *.ts           # Un archivo por componente (Three.js)
+    │   └── babylon/       # Implementación alternativa para Babylon.js
+    │       ├── templates.babylon.ts
+    │       ├── _factory.babylon.ts
+    │       └── *.babylon.ts
     │
-    ├── ui/                 # Interacción con el DOM
+    ├── ui/               # Interacción con el DOM
     │   ├── toolbar.ts              # Herramientas y simulación
-    │   ├── inspector.ts            # Métricas y propiedades
+    │   ├── inspector.ts             # Métricas y propiedades
     │   ├── notifications.ts        # Sistema de notificaciones
     │   ├── terminalIndicators.ts   # Esferas de conexión
     │   ├── dragdrop.ts             # Drag & Drop desde sidebar
-    │   ├── keyboard.ts             # Atajos de teclado
-    │   ├── experiments.ts          # Experimentos predefinidos
-    │   ├── library.ts              # Guardar/cargar circuitos
-    │   ├── viewButtons.ts          # Vistas de cámara
-    │   ├── wireTooltip.ts          # Tooltip hover sobre cables
-    │   ├── wireLegendModal.ts      # Modal leyenda de colores
-    │   ├── appTour.ts              # Tour guiado con Driver.js
-    │   ├── auth.ts                 # Sesión en localStorage
-    │   ├── loginScreen.ts          # Pantalla de login
-    │   ├── onboarding.ts           # Flujo de rol e institución
-    │   └── settingsModal.ts        # Modal de configuración
+    │   ├── keyboard.ts            # Atajos de teclado
+    │   ├── experiments.ts         # Experimentos predefinidos
+    │   ├── library.ts             # Guardar/cargar circuitos
+    │   ├── viewButtons.ts         # Vistas de cámara
+    │   ├── wireTooltip.ts         # Tooltip hover sobre cables
+    │   ├── wireLegendModal.ts     # Modal leyenda de colores
+    │   ├── appTour.ts             # Tour guiado con Driver.js
+    │   ├── auth.ts                # Sesión en localStorage
+    │   ├── loginScreen.ts         # Pantalla de login
+    │   ├── onboarding.ts          # Flujo de rol e institución
+    │   ├── settingsModal.ts       # Modal de configuración
+    │   ├── icons.ts               # Animaciones Lottie
+    │   └── mobile/                # Optimizaciones para móvil
+    │       ├── MobileLayout.ts
+    │       ├── MobileControls.ts
+    │       ├── BottomNav.ts
+    │       ├── BottomSheet.ts
+    │       ├── ComponentGrid.ts
+    │       ├── ComponentPopup.ts
+    │       └── FloatingToolbar.ts
     │
     └── utils/
         ├── animations.ts    # sparkEffect, pulse, wire flow
@@ -129,11 +151,19 @@ Batería · Fuente AC · Resistencia · Capacitor · Inductor · Voltímetro · 
 - Modal de configuración con 3 tabs: Perfil · General · Simulación
 - Historial de experimentos realizados por usuario
 
+### Soporte móvil
+- Layout adaptativo para dispositivos móviles
+- Bottom navigation con controles de simulación
+- Floating toolbar con herramientas
+- Bottom sheet para componentes
+- Grid de componentes optimizado para touch
+- Popup de selección de componentes
+
 ### UX
 - Tour guiado de 20 pasos con Driver.js — automático en el primer uso
 - Tooltip al hacer hover sobre cables con tipo y estándar IEC
 - Modal de leyenda completa de colores de cables y terminales
-- Iconos animados con animatedicons.co
+- Iconos animados con animatedicons.co y Lottie
 - Inspector colapsable
 
 ---
@@ -156,7 +186,7 @@ Batería · Fuente AC · Resistencia · Capacitor · Inductor · Voltímetro · 
 
 | Antes | Ahora |
 |---|---|
-| `script.js` — 1000 líneas | 38 archivos con responsabilidades separadas |
+| `script.js` — 1000 líneas | 38+ archivos con responsabilidades separadas |
 | Three.js vía CDN | Three.js como dependencia npm tipada |
 | `window.updateComponentValue` etc. | Bus de eventos (`AppEvents`) |
 | JS plano sin tipos | TypeScript estricto |
@@ -164,24 +194,53 @@ Batería · Fuente AC · Resistencia · Capacitor · Inductor · Voltímetro · 
 | Sin autenticación | Login + onboarding + configuración |
 | Biblioteca sin búsqueda ni thumbnail | Búsqueda, thumbnail real y sobreescribir |
 | Sin análisis | Vista de análisis con reporte de IA |
+| Solo escritorio | Soporte móvil con layout adaptativo |
+| Solo Three.js | Preparado para migración a Babylon.js |
 
 ---
 
-## Para agregar un nuevo componente
+## Dual rendering: Three.js vs Babylon.js
+
+El proyecto está preparado para usar dos motores 3D:
+
+- **Three.js** (`src/components/*.ts`) — versión actual para escritorio
+- **Babylon.js** (`src/components/babylon/*.babylon.ts`) — preparado para móvil y futuro
+
+### Para agregar un nuevo componente
 
 1. Crear `src/components/miComponente.ts` con `createMiComponente3D()`
-2. Registrarlo en `src/components/templates.ts`
-3. Agregar el tipo en `src/core/types.ts` → `ComponentType`
-4. Agregar la tarjeta en `index.html`
+2. Crear `src/components/babylon/miComponente.babylon.ts` si se quiere soporte Babylon
+3. Registrarlo en `src/components/templates.ts` (y `templates.babylon.ts`)
+4. Agregar el tipo en `src/core/types.ts` → `ComponentType`
+5. Agregar la tarjeta en `index.html`
 
 ---
 
-## Ruta hacia Android
+## Arquitectura
 
-La separación de `src/core/` sin Three.js ni DOM es la base para la migración futura:
+La separación estricta de `src/core/` (lógica pura) permite:
+- Testear cálculos eléctricos sin DOM ni WebGL
+- Migrar a diferentes motores 3D (Three.js → Babylon.js)
+- Reutilizar lógica en versión móvil/nativa
 
-- `src/core/` → se reutiliza **sin cambios**
-- `src/scene/SceneManager.ts` → se reemplaza por `BabylonSceneManager.ts`
-- `src/ui/` → se adapta si hay cambios de DOM
-- `src/components/` → se migra a assets Babylon (`.babylon`, `.glb`)
-- Empaquetado con **Mystral Native.js** — WebGPU nativo sobre Vulkan en Android, sin overhead de Chromium
+```
+┌─────────────────────────────────────────────────────┐
+│                    src/main.ts                      │
+│           Punto de entrada — conecta módulos        │
+└─────────────────────┬───────────────────────────────┘
+                      │
+        ┌─────────────┼─────────────┐
+        ▼             ▼             ▼
+   ┌─────────┐  ┌──────────┐  ┌─────────┐
+   │  core/  │  │  scene/  │  │   ui/   │
+   │ (lógica │  │ (Three.js│  │  (DOM)  │
+   │  pura)  │  │  /WebGL) │  │         │
+   └─────────┘  └──────────┘  └─────────┘
+        │             │             │
+        └─────────────┼─────────────┘
+                      ▼
+               ┌──────────────┐
+               │ AppEvents    │
+               │ (bus eventos)│
+               └──────────────┘
+```

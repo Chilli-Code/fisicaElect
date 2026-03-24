@@ -5,7 +5,7 @@
 import type { NotificationType } from '@core/types'
 
 export function setupNotifications(): void {
-  // El contenedor ya existe en el HTML
+  
 }
 
 export function showNotification(type: NotificationType, title: string, message: string): void {
