@@ -60,3 +60,5 @@ export function getRedoSnapshot(state: AppState): StateSnapshot | null {
   state.historyIndex++
   return state.history[state.historyIndex] ?? null
 }
+
+

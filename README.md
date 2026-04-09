@@ -25,7 +25,7 @@ El proyecto se despliega automáticamente a **GitHub Pages** en cada push a `mai
 |---|---|
 | TypeScript + Vite | Build tool y tipado estricto (ES2022) |
 | Three.js | Renderizado 3D (escritorio) |
-| Babylon.js | Renderizado 3D (móvil/futuro) |
+| Babylon.js | Renderizado 3D (móvil) - escena, componentes, cables |
 | Lottie | Animaciones de iconos |
 | Driver.js | Tour guiado de la app |
 | animatedicons.co | Iconos animados en menú y botones |
@@ -44,29 +44,56 @@ fisicaElect/
 ├── tsconfig.json          # TypeScript estricto ES2022
 ├── package.json
 └── src/
-    ├── main.ts            # Punto de entrada — conecta todos los módulos
+    ├── main.ts            # Punto de entrada desktop
+    ├── main.mobile.ts     # Punto de entrada móvil (Babylon.js)
     │
     ├── core/              # Lógica pura — sin Three.js, sin DOM
     │   ├── types.ts       # Todos los tipos del proyecto
     │   ├── state.ts       # Estado global (AppState)
     │   ├── circuit.ts     # Cálculos eléctricos (Ohm, métricas, voltímetro)
     │   ├── history.ts     # Undo / Redo hasta 50 acciones
+    │   ├── babylon-history.ts  # Undo/Redo para Babylon.js
+    │   ├── session-backup.ts    # Backup de sesión en localStorage
     │   ├── events.ts      # Bus de eventos desacoplado
     │   └── user.ts        # Tipos del perfil de usuario
     │
     ├── scene/             # Three.js — gestión de objetos 3D
     │   ├── SceneManager.ts      # Escena, cámara, renderer, loop
     │   ├── ComponentManager.ts  # CRUD de componentes en escena
-    │   └── WireManager.ts       # Cables con colores IEC 60446
+    │   ├── WireManager.ts       # Cables con colores IEC 60446
+    │   ├── BabylonSceneManager.ts       # Escena Babylon.js (móvil)
+    │   ├── BabylonComponentManager.ts   # CRUD componentes Babylon
+    │   ├── BabylonWireManager.ts        # Cables Babylon
+    │   └── ComponentManager_original.ts  # Backup de ComponentManager
     │
     ├── components/        # Factories de meshes 3D por tipo
     │   ├── _factory.ts    # Helpers compartidos
     │   ├── templates.ts   # Registro de plantillas
-    │   ├── *.ts           # Un archivo por componente (Three.js)
-    │   └── babylon/       # Implementación alternativa para Babylon.js
+    │   ├── battery.ts     # Batería/Fuente DC
+    │   ├── acSource.ts    # Fuente de corriente alterna
+    │   ├── resistor.ts    # Resistencia
+    │   ├── capacitor.ts   # Capacitor
+    │   ├── inductor.ts    # Inductor
+    │   ├── voltmeter.ts   # Voltímetro
+    │   ├── ammeter.ts     # Amperímetro
+    │   ├── led.ts         # LED
+    │   ├── switch.ts      # Interruptor
+    │   ├── diode.ts       # Diodo
+    │   ├── transistor.ts  # Transistor
+    │   └── babylon/       # Implementación Babylon.js (móvil)
     │       ├── templates.babylon.ts
     │       ├── _factory.babylon.ts
-    │       └── *.babylon.ts
+    │       ├── battery.babylon.ts
+    │       ├── acSource.babylon.ts
+    │       ├── resistor.babylon.ts
+    │       ├── capacitor.babylon.ts
+    │       ├── inductor.babylon.ts
+    │       ├── voltmeter.babylon.ts
+    │       ├── ammeter.babylon.ts
+    │       ├── led.babylon.ts
+    │       ├── switch.babylon.ts
+    │       ├── diode.babylon.ts
+    │       └── transistor.babylon.ts
     │
     ├── ui/               # Interacción con el DOM
     │   ├── toolbar.ts              # Herramientas y simulación
@@ -87,17 +114,31 @@ fisicaElect/
     │   ├── settingsModal.ts       # Modal de configuración
     │   ├── icons.ts               # Animaciones Lottie
     │   └── mobile/                # Optimizaciones para móvil
-    │       ├── MobileLayout.ts
-    │       ├── MobileControls.ts
-    │       ├── BottomNav.ts
-    │       ├── BottomSheet.ts
-    │       ├── ComponentGrid.ts
-    │       ├── ComponentPopup.ts
-    │       └── FloatingToolbar.ts
+    │       ├── MobileLayout.ts       # Layout principal móvil
+    │       ├── MobileControls.ts     # Control táctil (tap, drag, cable)
+    │       ├── MobileComponents.ts   # Componentes UI móvil
+    │       ├── MobileEditPopup.ts    # Popup de edición móvil
+    │       ├── MobileMetrics.ts      # Panel de métricas en tiempo real
+    │       ├── MobileNotifications.ts # Notificaciones móvil
+    │       ├── MobileTools.ts        # Herramientas flotantes móvil
+    │       ├── MobileUndoRedo.ts     # Undo/Redo táctil
+    │       ├── MobileViews.ts        # Vistas de cámara móvil
+    │       ├── BottomNav.ts          # Navegación inferior
+    │       ├── BottomSheet.ts        # Sheet de selección
+    │       ├── ComponentGrid.ts      # Grilla de componentes
+    │       ├── ComponentPopup.ts     # Popup de propiedades
+    │       ├── FloatingToolbar.ts    # Barra de herramientas flotante
+    │       └── screens/              # Pantallas completas móvil
+    │           ├── MobileLibrary.ts
+    │           ├── MobileExperiments.ts
+    │           ├── MobileAnalysis.ts
+    │           └── MobileSettings.ts
     │
     └── utils/
-        ├── animations.ts    # sparkEffect, pulse, wire flow
-        └── validation.ts    # Reglas de validación del circuito
+        ├── animations.ts         # sparkEffect, pulse, wire flow
+        ├── validation.ts          # Reglas de validación del circuito
+        ├── babylon-animations.ts  # Animaciones para Babylon.js
+        └── validation.babylon.ts   # Validación para Babylon.js
 ```
 
 ---
@@ -152,12 +193,23 @@ Batería · Fuente AC · Resistencia · Capacitor · Inductor · Voltímetro · 
 - Historial de experimentos realizados por usuario
 
 ### Soporte móvil
-- Layout adaptativo para dispositivos móviles
-- Bottom navigation con controles de simulación
-- Floating toolbar con herramientas
-- Bottom sheet para componentes
-- Grid de componentes optimizado para touch
-- Popup de selección de componentes
+- **Detección automática**: Detecta si es móvil/desktop y carga el entry point correspondiente
+- **Layout adaptativo**: `MobileLayout.ts` oculta UI desktop e inyecta componentes móvil
+- **Control táctil avanzado** (`MobileControls.ts`):
+  - Tap para seleccionar (animación de salto + resalte dorado)
+  - Drag (>8px) para mover componentes
+  - Detección inteligente con fallback en radio expanding
+  - Control de cámara con attach/detach dinámico
+- **Bottom navigation**: Navegación inferior (Trabajo, Biblioteca, Análisis, Config)
+- **Floating toolbar**: Herramientas flotantes (Seleccionar, Cable, Mover, Deshacer)
+- **Bottom sheet**: Hoja deslizable con grilla de componentes
+- **Metrics panel**: Panel inferior con Voltaje, Corriente, Resistencia y Estado en tiempo real
+- **Pantallas completas móvil**: Library, Experiments, Analysis, Settings
+- **Babylon.js en móvil**: Escena, componentes y cables optimizados para touch
+- **ArcRotateCamera**: Cámara con controles táctiles
+- **Undo/Redo táctil**: `MobileUndoRedo.ts` para acciones mobile
+- **Notificaciones móvil**: `MobileNotifications.ts` para feedback visual
+- **Vistas de cámara móvil**: `MobileViews.ts` para cambiar perspectiva
 
 ### UX
 - Tour guiado de 20 pasos con Driver.js — automático en el primer uso
@@ -186,7 +238,7 @@ Batería · Fuente AC · Resistencia · Capacitor · Inductor · Voltímetro · 
 
 | Antes | Ahora |
 |---|---|
-| `script.js` — 1000 líneas | 38+ archivos con responsabilidades separadas |
+| `script.js` — 1000 líneas | 60+ archivos con responsabilidades separadas |
 | Three.js vía CDN | Three.js como dependencia npm tipada |
 | `window.updateComponentValue` etc. | Bus de eventos (`AppEvents`) |
 | JS plano sin tipos | TypeScript estricto |
@@ -194,22 +246,31 @@ Batería · Fuente AC · Resistencia · Capacitor · Inductor · Voltímetro · 
 | Sin autenticación | Login + onboarding + configuración |
 | Biblioteca sin búsqueda ni thumbnail | Búsqueda, thumbnail real y sobreescribir |
 | Sin análisis | Vista de análisis con reporte de IA |
-| Solo escritorio | Soporte móvil con layout adaptativo |
-| Solo Three.js | Preparado para migración a Babylon.js |
+| Solo escritorio | Soporte móvil completo con Babylon.js |
+| Solo Three.js | Dual rendering: Three.js (desktop) + Babylon.js (móvil) |
+| Sin backup de sesión | `session-backup.ts` para persistencia |
+| Desktop-only undo/redo | `babylon-history.ts` para undo/redo en móvil |
 
 ---
 
 ## Dual rendering: Three.js vs Babylon.js
 
-El proyecto está preparado para usar dos motores 3D:
+El proyecto usa dos motores 3D para diferentes plataformas:
 
-- **Three.js** (`src/components/*.ts`) — versión actual para escritorio
-- **Babylon.js** (`src/components/babylon/*.babylon.ts`) — preparado para móvil y futuro
+- **Three.js** (`src/components/*.ts`) — versión desktop con todas las características completas
+- **Babylon.js** (`src/components/babylon/*.babylon.ts`) — versión móvil optimizada para táctil
+
+### Flujo móvil
+```
+main.mobile.ts → BabylonSceneManager → BabylonComponentManager → BabylonWireManager
+                    ↓
+              Render Loop (60fps)
+```
 
 ### Para agregar un nuevo componente
 
 1. Crear `src/components/miComponente.ts` con `createMiComponente3D()`
-2. Crear `src/components/babylon/miComponente.babylon.ts` si se quiere soporte Babylon
+2. Crear `src/components/babylon/miComponente.babylon.ts` para soporte móvil
 3. Registrarlo en `src/components/templates.ts` (y `templates.babylon.ts`)
 4. Agregar el tipo en `src/core/types.ts` → `ComponentType`
 5. Agregar la tarjeta en `index.html`
@@ -223,6 +284,43 @@ La separación estricta de `src/core/` (lógica pura) permite:
 - Migrar a diferentes motores 3D (Three.js → Babylon.js)
 - Reutilizar lógica en versión móvil/nativa
 
+### Desktop (main.ts)
+```
+┌─────────────────────────────────────────────────────┐
+│                    src/main.ts                      │
+│           Punto de entrada — conecta módulos        │
+└─────────────────────┬───────────────────────────────┘
+                       │
+         ┌─────────────┼─────────────┐
+         ▼             ▼             ▼
+    ┌─────────┐  ┌──────────┐  ┌─────────┐
+    │  core/  │  │  scene/  │  │   ui/  │
+    │ (lógica │  │ (Three.js│  │  (DOM)  │
+    │  pura)  │  │  /WebGL) │  │         │
+    └─────────┘  └──────────┘  └─────────┘
+         │             │             │
+         └─────────────┼─────────────┘
+                       ▼
+                ┌──────────────┐
+                │ AppEvents    │
+                │ (bus eventos)│
+                └──────────────┘
+```
+
+### Móvil (main.mobile.ts)
+```
+┌─────────────────────────────────────────────────────┐
+│                  src/main.mobile.ts                 │
+│           Detecta móvil → Babylon.js                │
+└─────────────────────┬───────────────────────────────┘
+                       │
+         ┌─────────────┼─────────────┐
+         ▼             ▼             ▼
+    ┌─────────┐  ┌──────────────┐  ┌─────────┐
+    │  core/  │  │ BabylonScene │  │ mobile/ │
+    │ (lógica │  │  /Component  │  │   ui/   │
+    │  pura)  │  │  /WireManager│  │         │
+    └─────────┘  └──────────────┘  └─────────┘
 ```
 ┌─────────────────────────────────────────────────────┐
 │                    src/main.ts                      │

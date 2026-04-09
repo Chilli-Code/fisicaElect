@@ -297,7 +297,7 @@ html, body {  height: 100dvh;   overflow: hidden; background: var(--bg-primary);
 .m-fab-active { background: #007AFF !important; color: white !important; }
 
 #m-sim-btn {
-  position: absolute; top: 64px; right: 12px;
+  position: absolute; top: 50px; right: 12px;
   width: 40px; height: 40px; border-radius: 12px;
   background: #34C759; border: none; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
@@ -327,7 +327,7 @@ html, body {  height: 100dvh;   overflow: hidden; background: var(--bg-primary);
 }
 .m-overlay-open { opacity: 1 !important; pointer-events: auto !important; }
 
-#m-sheet {
+#m-sheet,.horizontal-m-sheet {
   position: fixed; bottom: -100%; left: 0; right: 0;
   background: #1c1c1e; border-radius: 20px 20px 0 0;
   border-top: 0.5px solid rgba(255,255,255,0.1);
@@ -437,10 +437,249 @@ html, body {  height: 100dvh;   overflow: hidden; background: var(--bg-primary);
     .horizontal-m-floating-tools {
     max-height: 60vh; /* 🔥 CLAVE */
     top:40px !important;
+    overflow: hidden;
+    overflow-y: scroll;
     left: 8px !important;
     overflow-y: auto;
     overflow-x: hidden;
-
+    gap: 5px;
     -webkit-overflow-scrolling: touch;
   }
+
+    .horizontal-m-floating-tools .m-fab {
+      padding: 10px;
 }
+
+#m-view-btn{
+      bottom: 148px !important;
+    right: 10px !important;
+    left: initial !important;
+}
+
+#m-view-menu{
+  bottom: 188px !important;
+  gap:0px !important;
+}
+.m-view-opt{
+  padding: 5px 14px !important;
+}
+  #m-library-grid {
+        display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    margin-top: 10px;/* 2 columnas */
+  }
+  .m-circuit-card{
+    overflow: visible !important; 
+  }
+  .m-circuit-card div:nth-child(1){
+    border-radius:10px;
+  }
+}
+
+/* Botón de simulación */
+#m-sim-btn {
+    position: absolute;
+    top: 64px;
+    right: 12px;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: #34C759;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+#m-sim-btn:active {
+    transform: scale(0.95);
+}
+/* Botón de edición flotante */
+#m-edit-btn {
+    position: absolute;
+    top: 116px;
+    right: 12px;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: #007AFF;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s;
+}
+
+#m-edit-btn:active {
+    transform: scale(0.95);
+}
+
+
+
+
+
+
+/* Component Popup */
+.m-component-popup {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(28, 28, 30, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 20px 20px 0 0;
+  z-index: 10000;
+  max-height: 70vh;
+  overflow-y: auto;
+  box-shadow: 0 -2px 20px rgba(0, 0, 0, 0.3);
+  border-top: 0.5px solid rgba(255, 255, 255, 0.1);
+}
+
+.m-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+  backdrop-filter: blur(4px);
+}
+
+.m-popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 0.5px solid rgba(255, 255, 255, 0.1);
+}
+
+.m-popup-title {
+  font-size: 17px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.m-popup-close {
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: #8e8e93;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+}
+
+.m-popup-content {
+  padding: 20px;
+}
+
+.m-popup-field {
+  margin-bottom: 20px;
+}
+
+.m-popup-field label {
+  display: block;
+  font-size: 13px;
+  color: #8e8e93;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.m-popup-field input,
+.m-popup-field select {
+  width: 100%;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 0.5px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  color: #fff;
+  font-size: 16px;
+  outline: none;
+}
+
+.m-popup-field input:focus,
+.m-popup-field select:focus {
+  border-color: #007aff;
+}
+
+.m-popup-delete {
+  width: 100%;
+  padding: 12px;
+  background: rgba(255, 59, 48, 0.2);
+  border: 0.5px solid rgba(255, 59, 48, 0.5);
+  border-radius: 12px;
+  color: #ff3b30;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.m-popup-delete:active {
+  background: rgba(255, 59, 48, 0.3);
+}
+
+/* Botón de edición */
+#m-edit-btn {
+  position: absolute;
+  top: 116px;
+  right: 12px;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: #007AFF;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+#m-edit-btn:active {
+  transform: scale(0.95);
+}
+
+.m-sheet-overlay{
+  display: none;
+  position: fixed; bottom: -100%; left: 0; right: 0;
+  background: #1c1c1e; border-radius: 20px 20px 0 0;
+  border-top: 0.5px solid rgba(255,255,255,0.1);
+  padding: 10px 0 80px; transition: bottom .35s cubic-bezier(.32,.72,0,1);
+  z-index: 300;
+}
+
+
+.m-sheet-handle {
+  width: 36px; height: 4px; background: #3a3a3c;
+  border-radius: 2px; margin: 0 auto 12px;
+}
+
+.margn{
+  padding-bottom: 6px;
+}
+
+
+
+
+
+
+  @media (max-width: 767px) {
+    .menu-bar, .sidebar, .inspector, .toolbar, .bottom-toolbar {
+      display: none !important;
+    }
+    .canvas-area {
+      position: fixed !important;
+      inset: 0 !important;
+    }
+  }

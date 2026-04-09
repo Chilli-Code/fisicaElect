@@ -14,16 +14,17 @@ import { MeshBuilder } from '@babylonjs/core/Meshes/meshBuilder'
 import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial'
 import { Color3 } from '@babylonjs/core/Maths/math.color'
 import { GridMaterial } from '@babylonjs/materials/grid/gridMaterial'
-import * as THREE from 'three'
+import { on } from '@core/events'  // ✅ AGREGAR ESTE IMPORT
+import type { BabylonComponentManager } from '@scene/BabylonComponentManager'
+import type { BabylonWireManager } from '@scene/BabylonWireManager'
 
 export class BabylonSceneManager {
   public engine: Engine
   public scene: Scene
   public camera: ArcRotateCamera
-syncThreeObject(obj: THREE.Object3D): void {
-  // por ahora solo log — sincronización real viene después
-  console.log('sync', obj.type)
-}
+    public componentManager?: BabylonComponentManager  // ✅ Agregar si no existe
+  public wireManager?: BabylonWireManager   
+
   private onFrameCallbacks: Array<() => void> = []
 
   constructor(canvas: HTMLCanvasElement) {
@@ -82,8 +83,148 @@ gridMat.opacity = 0.5
 ground.material = gridMat
 
     // Resize automático
-    window.addEventListener('resize', () => this.engine.resize())
+window.addEventListener('resize', () => {
+  this.engine.resize()
+  const canvas = this.engine.getRenderingCanvas()
+  if (canvas) {
+    canvas.width = window.innerWidth
+    canvas.height = window.innerHeight
+    // ✅ Re-adjuntar control de cámara para que el touch funcione
+    this.camera.detachControl()
+    this.camera.attachControl(canvas, true)
   }
+})
+
+    this.setupHistoryListener()
+    
+  }
+
+
+  /**
+   * Configura el listener para restaurar estado desde undo/redo
+   */
+  private setupHistoryListener(): void {
+    // Escuchar evento de restauración de historial
+    document.addEventListener('babylon:history:restored', (e: any) => {
+      const data = e.detail || {}
+      if (data.components || data.wires) {
+        this.rebuildFromSnapshot(data.components, data.wires)
+      }
+    })
+  }
+public forceResize(): void {
+  const canvas = this.engine.getRenderingCanvas()
+  if (canvas) {
+    canvas.width = window.innerWidth * window.devicePixelRatio
+    canvas.height = window.innerHeight * window.devicePixelRatio
+    canvas.style.width = window.innerWidth + 'px'
+    canvas.style.height = window.innerHeight + 'px'
+  }
+  this.engine.resize()
+  // Re-adjuntar cámara para recalibrar coordenadas
+  const c = this.engine.getRenderingCanvas()!
+  this.camera.detachControl()
+  this.camera.attachControl(c, true)
+}
+
+/**
+ * Reconstruye la escena desde un snapshot de undo/redo
+ */
+private rebuildFromSnapshot(components: any[], wires: any[]): void {
+  // 1. Limpiar escena actual (componentes y cables)
+  if (this.componentManager) {
+    this.componentManager.clear()
+  }
+  if (this.wireManager) {
+    this.wireManager.clear()
+  }
+  
+  // 2. Restaurar componentes
+  components?.forEach((c: any) => {
+    if (this.componentManager) {
+      const comp = this.componentManager.add(c.type, c.x, c.z)
+      if (comp) {
+        comp.value = c.value
+        // ✅ Ajustar posición exacta (cast a any para acceder a position)
+        const node = this.scene.getNodeByName(comp.id) as any
+        if (node) {
+          node.position = new Vector3(c.x, 1, c.z)
+        }
+      }
+    }
+  })
+  
+  // 3. Restaurar cables (recrear desde los componentes restaurados)
+  wires?.forEach((w: any) => {
+    if (this.wireManager && this.componentManager) {
+      const startComp = components?.find((c: any) => c.id === w.startComp)
+      const endComp = components?.find((c: any) => c.id === w.endComp)
+      
+      if (startComp && endComp) {
+        // ✅ Cast a any para acceder a getChildMeshes
+        const startNode = this.scene.getNodeByName(startComp.id) as any
+        const endNode = this.scene.getNodeByName(endComp.id) as any
+        
+        if (startNode && endNode) {
+          let startTermMesh: any = null
+          let endTermMesh: any = null
+          
+          startNode.getChildMeshes?.().forEach((mesh: any) => {
+            if (mesh.metadata?.isTerminal && mesh.metadata.terminalType === w.startTerm) {
+              startTermMesh = mesh
+            }
+          })
+          endNode.getChildMeshes?.().forEach((mesh: any) => {
+            if (mesh.metadata?.isTerminal && mesh.metadata.terminalType === w.endTerm) {
+              endTermMesh = mesh
+            }
+          })
+          
+          if (startTermMesh && endTermMesh) {
+            const tempStartComp = { 
+              id: w.startComp, 
+              type: startComp.type, 
+              terminals: [], 
+              mesh: startNode,
+              position: { x: startComp.x, z: startComp.z },
+              name: '',
+              value: 0
+            }
+            const tempEndComp = { 
+              id: w.endComp, 
+              type: endComp.type, 
+              terminals: [], 
+              mesh: endNode,
+              position: { x: endComp.x, z: endComp.z },
+              name: '',
+              value: 0
+            }
+            const startTerm = { 
+              type: w.startTerm, 
+              position: new Vector3(0,0,0), 
+              mesh: startTermMesh 
+            }
+            const endTerm = { 
+              type: w.endTerm, 
+              position: new Vector3(0,0,0), 
+              mesh: endTermMesh 
+            }
+            
+            this.wireManager.create(
+              tempStartComp as any,
+              startTerm as any,
+              tempEndComp as any,
+              endTerm as any,
+              { color: '#' + w.baseColor.toString(16).padStart(6, '0') }
+            )
+          }
+        }
+      }
+    }
+  })
+}
+  // ← Esta es la llave de cierre de la clase
+
 
   onFrame(cb: () => void): void {
     this.onFrameCallbacks.push(cb)

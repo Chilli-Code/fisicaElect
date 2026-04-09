@@ -27,11 +27,29 @@ import { setupTour } from '@ui/appTour'
 import { getSession, renderUserBadge } from '@ui/auth'
 import { showLoginScreen } from '@ui/loginScreen'
 import { setupSettingsModal } from '@ui/settingsModal'
+import { 
+  setupExitProtection,
+  loadBackup,
+  clearBackup,
+  setupBackupRestore
+} from '@core/session-backup'
 
 const isMobile = window.innerWidth < 768 || 'ontouchstart' in window
 
 if (isMobile) {
-  import('./main.mobile').then(m => m.initMobile())
+  // ✅ Mostrar loader inmediatamente
+  const loader = document.getElementById('app-loader')!
+  loader.style.display = 'flex'
+
+  import('./main.mobile').then(m => {
+    m.initMobile()
+    // ✅ Quitar loader cuando mobile está listo
+    setTimeout(() => {
+      loader.style.opacity = '0'
+      loader.style.transition = 'opacity 0.3s ease'
+      setTimeout(() => loader.remove(), 300)
+    }, 300)
+  })
 } else {
   const user = getSession()
   if (!user) {
@@ -40,7 +58,6 @@ if (isMobile) {
     initApp()
   }
 }
-
 function initApp(): void {
   renderUserBadge()
   setupSettingsModal()
@@ -94,4 +111,29 @@ function initApp(): void {
     title: '¡Listo!',
     message: 'Circuit Lab Pro cargado ⚡',
   })
+  setupExitProtection(state)
+   // Verificar backup
+  const backup = loadBackup()
+  if (backup) {
+    setTimeout(() => {
+      setupBackupRestore(backup, (b) => {
+b.components.forEach(c => {
+componentManager.restoreFromSnapshot(c)
+})
+        requestAnimationFrame(() => {
+          b.wires.forEach(w => {
+            const sc = state.components.find(c => c.id === w.startComp)
+            const ec = state.components.find(c => c.id === w.endComp)
+            if (!sc || !ec) return
+            const st = sc.terminals.find(t => t.type === w.startTerm)
+            const et = ec.terminals.find(t => t.type === w.endTerm)
+            if (!st || !et) return
+            wireManager.create(sc, st, ec, et)
+          })
+          state.idCounter = b.idCounter
+          emit(AppEvents.STATE_CHANGED, null)
+        })
+      })
+    }, 500)
+  }
 }
